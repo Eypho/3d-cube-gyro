@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Cube with Gyro</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script>
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    let renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    let geometry = new THREE.BoxGeometry();
+    let material = new THREE.MeshNormalMaterial({wireframe: false});
+    let cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    camera.position.z = 3;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Гироскоп
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", function(event) {
+        let beta = event.beta || 0;   // X axis (front-back)
+        let gamma = event.gamma || 0; // Y axis (left-right)
+        let alpha = event.alpha || 0; // Z axis (compass)
+
+        cube.rotation.x = beta * Math.PI / 180;
+        cube.rotation.y = gamma * Math.PI / 180;
+        cube.rotation.z = alpha * Math.PI / 180;
+      }, true);
+    } else {
+      alert("DeviceOrientation не поддерживается");
+    }
+  </script>
+</body>
+</html>
